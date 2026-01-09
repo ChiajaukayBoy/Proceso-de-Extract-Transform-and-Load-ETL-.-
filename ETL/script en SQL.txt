@@ -1,0 +1,61 @@
+-- 1. Tabla de colaboradores evaluados
+CREATE TABLE dim_colaboradores (
+    ID_COLABORADOR VARCHAR(50) PRIMARY KEY,
+    ROL_COLABORADOR VARCHAR(100)
+);
+
+-- 2. Tabla de evaluadores
+CREATE TABLE dim_evaluadores (
+    ID_EVALUADOR VARCHAR(50) PRIMARY KEY,
+    ROL_EVALUADOR VARCHAR(100)
+);
+
+-- 3. Tabla de chapters
+CREATE TABLE dim_chapters (
+    ID_CHAPTER INT PRIMARY KEY,
+    NOMBRE_CHAPTER VARCHAR(100)
+);
+
+-- 4. Tabla de items (capacidades evaluadas)
+CREATE TABLE dim_items (
+    ID_ITEM INT PRIMARY KEY,
+    NOMBRE_ITEM VARCHAR(100),
+    TIPO_ITEM VARCHAR(50)
+);
+
+-- 5. Tabla de hechos: evaluaciones realizadas
+CREATE TABLE hecho_evaluaciones (
+    FECHA_EVALUACION DATE,
+    ID_COLABORADOR VARCHAR(50),
+    ID_EVALUADOR VARCHAR(50),
+    ID_CHAPTER INT,
+    ID_ITEM INT,
+    NIVEL_NUM INT,         -- Categórica entre 0 y 4
+    NIVEL_CAT VARCHAR(20), -- Texto representativo del nivel
+
+    -- Claves foráneas
+    FOREIGN KEY (ID_COLABORADOR) REFERENCES dim_colaboradores(ID_COLABORADOR),
+    FOREIGN KEY (ID_EVALUADOR) REFERENCES dim_evaluadores(ID_EVALUADOR),
+    FOREIGN KEY (ID_CHAPTER) REFERENCES dim_chapters(ID_CHAPTER),
+    FOREIGN KEY (ID_ITEM) REFERENCES dim_items(ID_ITEM)
+);
+
+-- 6. Tabla de última evaluación por colaborador por ítem
+CREATE TABLE ultima_evaluacion (
+    ID_COLABORADOR VARCHAR(50),
+    ID_EVALUADOR VARCHAR(50),
+    ID_CHAPTER INT,
+    ID_ITEM INT,
+    FECHA_EVALUACION DATE,
+    NIVEL_NUM INT,
+    NIVEL_CAT VARCHAR(20),
+
+    -- Clave primaria compuesta: una por colaborador por ítem
+    CONSTRAINT pk_ultima_evaluacion PRIMARY KEY (ID_COLABORADOR, ID_ITEM),
+
+    -- Claves foráneas
+    FOREIGN KEY (ID_COLABORADOR) REFERENCES dim_colaboradores(ID_COLABORADOR),
+    FOREIGN KEY (ID_EVALUADOR) REFERENCES dim_evaluadores(ID_EVALUADOR),
+    FOREIGN KEY (ID_CHAPTER) REFERENCES dim_chapters(ID_CHAPTER),
+    FOREIGN KEY (ID_ITEM) REFERENCES dim_items(ID_ITEM)
+);
